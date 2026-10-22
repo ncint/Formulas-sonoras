@@ -1,0 +1,50 @@
+/* Máquina de Caracteres Sonoros — base */
+
+:root {
+  --fundo: #12141a;
+  --superficie: #1c1f27;
+  --borda: #2a2e3a;
+  --texto: #f0f2f5;
+  --texto-suave: #9aa0ad;
+  --destaque: #6ee7b7;
+  --destaque-forte: #34d399;
+  --erro: #f87171;
+  --raio: 14px;
+  --max-largura: 640px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  min-height: 100dvh;
+}
+
+main {
+  max-width: var(--max-largura);
+  margin: 0 auto;
+  padding: 1.25rem;
+  padding-top: max(1.25rem, env(safe-area-inset-top));
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+}
+
+h1 {
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.35rem;
+}
+
+a { color: var(--destaque); }
+
+.mono {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}

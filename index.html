@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Máquina de Caracteres Sonoros</title>
+<meta name="description" content="Escreve números. Cria ritmos. Descobre padrões.">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/inicio.css">
+</head>
+<body>
+<main class="inicio">
+  <header>
+    <h1>Máquina de Caracteres Sonoros</h1>
+    <p class="tagline">Escreve números. Cria ritmos. Descobre padrões.</p>
+  </header>
+
+  <section class="instrucoes" aria-labelledby="como-funciona">
+    <h2 id="como-funciona">Como funciona</h2>
+    <ol>
+      <li>Cada número representa uma <strong>célula rítmica</strong>.</li>
+      <li>As células são combinadas pela ordem em que são escritas.</li>
+      <li>A sequência repete-se continuamente.</li>
+      <li>Podes alterar os números, experimentar novas combinações e controlar o andamento.</li>
+      <li>Utiliza os botões para iniciar ou parar a reprodução.</li>
+    </ol>
+  </section>
+
+  <section class="exemplo" aria-labelledby="exemplo-titulo">
+    <h2 id="exemplo-titulo">Exemplo: <span class="mono">2 + 3 + 1</span></h2>
+    <p>
+      A célula <strong>2</strong> produz dois ataques seguidos de silêncio,
+      a célula <strong>3</strong> produz três ataques e uma pausa, e a célula
+      <strong>1</strong> produz um ataque e silêncio. Depois, toda a
+      sequência volta ao início.
+    </p>
+    <a class="botao-exemplo" href="maquina.html?seq=2+3+1">Experimentar «2 + 3 + 1»</a>
+  </section>
+
+  <footer>
+    <a class="botao-entrar" href="maquina.html">Entrar na máquina rítmica</a>
+    <p class="nota">Som gerado localmente no navegador — nenhuma instalação necessária.</p>
+  </footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,211 @@
+/* Máquina rítmica */
+
+.maquina header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.maquina h1 {
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
+  margin: 0;
+}
+
+.voltar {
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: var(--texto-suave);
+}
+
+/* Entrada */
+
+.entrada {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 0.9rem 1rem 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.rotulo {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+}
+
+.campo-sequencia {
+  width: 100%;
+  font-size: 1.6rem;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  letter-spacing: 0.12em;
+  text-align: center;
+  color: var(--texto);
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  padding: 0.65rem 0.5rem;
+  min-height: 52px;
+}
+
+.campo-sequencia:focus {
+  outline: 2px solid var(--destaque);
+  outline-offset: 1px;
+}
+
+.mensagem {
+  color: var(--erro);
+  font-size: 0.9rem;
+  min-height: 1.3em;
+  margin: 0.35rem 0 0;
+}
+
+.mensagem:empty { display: none; }
+
+.dica {
+  color: var(--texto-suave);
+  font-size: 0.8rem;
+  margin: 0.25rem 0 0;
+}
+
+/* Visual */
+
+.visual { margin-bottom: 1rem; }
+
+.palco {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.celula-atual {
+  font-size: 4.5rem;
+  font-weight: 800;
+  line-height: 1;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  transition: transform 60ms ease-out;
+}
+
+.pulso {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 55%, rgba(110, 231, 183, 0.25), transparent 65%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pulso.ativo { animation: pulso 120ms ease-out; }
+
+@keyframes pulso {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.posicao {
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+.linha-celulas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-top: 0.6rem;
+}
+
+.celula-chip {
+  min-width: 44px;
+  padding: 0.3rem 0.5rem;
+  text-align: center;
+  font-size: 1.15rem;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  color: var(--texto-suave);
+  background: var(--superficie);
+}
+
+.celula-chip.ativa {
+  border-color: var(--destaque);
+  color: var(--destaque);
+  background: rgba(110, 231, 183, 0.08);
+}
+
+/* Controlos */
+
+.controles {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.botao {
+  border: none;
+  border-radius: 999px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 0.7rem 1.5rem;
+  min-height: 52px;
+  min-width: 120px;
+  cursor: pointer;
+}
+
+.botao:disabled { opacity: 0.45; cursor: default; }
+
+.botao-play {
+  background: var(--destaque-forte);
+  color: #06281c;
+}
+
+.botao-stop {
+  background: var(--fundo);
+  color: var(--texto);
+  border: 1px solid var(--borda);
+}
+
+.andamento {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1 1 200px;
+  min-height: 44px;
+}
+
+.andamento label {
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.andamento input[type="range"] {
+  flex: 1;
+  min-width: 100px;
+  accent-color: var(--destaque-forte);
+  min-height: 44px;
+}
+
+.andamento output {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  min-width: 3ch;
+  text-align: right;
+}

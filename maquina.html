@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Máquina de Caracteres Sonoros — Máquina rítmica</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/maquina.css">
+</head>
+<body>
+<main class="maquina">
+  <header>
+    <a class="voltar" href="index.html">← Instruções</a>
+    <h1>Máquina de Caracteres Sonoros</h1>
+  </header>
+
+  <section class="entrada" aria-label="Sequência de células rítmicas">
+    <label for="sequencia" class="rotulo">A tua sequência</label>
+    <input id="sequencia" class="campo-sequencia" type="text"
+           inputmode="numeric" autocomplete="off" autocapitalize="off"
+           spellcheck="false" placeholder="ex.: 2 + 3 + 1"
+           value="2 + 3 + 1">
+    <p id="mensagem" class="mensagem" role="status" aria-live="polite"></p>
+    <div class="dica">Números 1, 2 ou 3, separados (opcionalmente) por «+».</div>
+  </section>
+
+  <section class="visual" aria-label="Célula em reprodução">
+    <div id="palco" class="palco">
+      <div class="celula-atual" id="celula-atual">—</div>
+      <div class="pulso" id="pulso" aria-hidden="true"></div>
+      <div class="posicao" id="posicao">pronto</div>
+    </div>
+    <div id="linha-celulas" class="linha-celulas" aria-hidden="true"></div>
+  </section>
+
+  <section class="controles" aria-label="Controlos de reprodução">
+    <button id="botao-play" class="botao botao-play" type="button">▶ Tocar</button>
+    <button id="botao-stop" class="botao botao-stop" type="button" disabled>■ Parar</button>
+    <div class="andamento">
+      <label for="bpm">BPM</label>
+      <input id="bpm" type="range" min="60" max="180" value="120" step="1">
+      <output id="bpm-valor" for="bpm">120</output>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

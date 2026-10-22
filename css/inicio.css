@@ -1,0 +1,73 @@
+/* Página inicial */
+
+.inicio header {
+  text-align: center;
+  margin: 2.5rem 0 1.5rem;
+}
+
+.tagline {
+  color: var(--texto-suave);
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.instrucoes, .exemplo {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 1.1rem 1.25rem;
+  margin: 0 0 1rem;
+}
+
+.instrucoes h2, .exemplo h2 {
+  font-size: 1.05rem;
+  margin: 0 0 0.6rem;
+}
+
+.instrucoes ol {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.instrucoes li { margin: 0.3rem 0; }
+
+.exemplo p { margin: 0 0 0.9rem; }
+
+.botao-exemplo {
+  display: inline-block;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid var(--destaque);
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+  min-height: 44px;
+  line-height: 1.6;
+}
+
+.inicio footer {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.botao-entrar {
+  display: inline-block;
+  background: var(--destaque-forte);
+  color: #06281c;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 0.85rem 2rem;
+  border-radius: 999px;
+  text-decoration: none;
+  min-height: 52px;
+  line-height: 1.4;
+}
+
+.nota {
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  margin: 0.9rem 0 0;
+}
+
+@media (min-width: 700px) {
+  .inicio { max-width: 720px; }
+}
