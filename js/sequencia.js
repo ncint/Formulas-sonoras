@@ -1,27 +1,33 @@
 /* Interpretação da sequência de células rítmicas.
  *
- * Regras (versão 1):
- *  - Cada célula tem DURACAO_CELULA pulsações iguais.
- *  - O número n produz n ataques consecutivos no início da célula,
- *    seguidos de silêncio até completar a célula.
+ * Regras (versão 1, rev. 1 — grade de colcheias):
+ *  - A unidade mínima é a COLCHEIA (meia semínima).
+ *  - 1 = semínima: um ataque com a duração de duas colcheias.
+ *  - 2 = duas colcheias atacadas + uma pausa de colcheia.
+ *  - 3 = três colcheias atacadas + uma pausa de colcheia.
  *  - As células são reproduzidas pela ordem escrita; a sequência
  *    completa repete-se em ciclo.
  *  - "+" é um separador visual opcional; espaços e vírgulas também
  *    são aceites como separadores.
  *
- * Para alterar as durações ou os padrões no futuro basta mudar
- * gerarPadrao / DURACAO_CELULA sem tocar no áudio nem na interface.
+ * Para alterar durações ou padrões no futuro basta mudar PADROES
+ * sem tocar no áudio nem na interface.
  */
 
-export const DURACAO_CELULA = 4;
+/* Padrões por célula, em colcheias (1 = ataque, 0 = silêncio). */
+export const PADROES = {
+  1: [1, 0],
+  2: [1, 1, 0],
+  3: [1, 1, 1, 0],
+};
+
+export const COLCHEIAS_POR_SEMINIMA = 2;
 
 export const CARACTERES_VALIDOS = [1, 2, 3];
 
 /** Gera o padrão de ataques (1) e silêncios (0) de uma célula. */
 export function gerarPadrao(numero) {
-  const padrao = new Array(DURACAO_CELULA).fill(0);
-  for (let i = 0; i < numero && i < DURACAO_CELULA; i++) padrao[i] = 1;
-  return padrao;
+  return PADROES[numero].slice();
 }
 
 /**
@@ -55,11 +61,26 @@ export function analisarSequencia(texto) {
   return { ok: true, celulas };
 }
 
-/** Expande a sequência de células numa lista de pulsações (1 ataque / 0 silêncio). */
-export function expandirPulsoes(celulas) {
+/**
+ * Expande a sequência de células para a grade de colcheias.
+ * Devolve:
+ *  - pulsoes: array de 1/0 (colcheias do ciclo completo)
+ *  - celulaDoPulso: índice da célula a que cada colcheia pertence
+ *  - posicaoNaCelula: posição (0-based) da colcheia dentro da célula
+ */
+export function expandirSequencia(celulas) {
   const pulsoes = [];
-  for (const celula of celulas) {
-    for (const valor of gerarPadrao(celula)) pulsoes.push(valor);
-  }
-  return pulsoes;
+  const celulaDoPulso = [];
+  const posicaoNaCelula = [];
+
+  celulas.forEach((celula, indice) => {
+    const padrao = gerarPadrao(celula);
+    padrao.forEach((valor, pos) => {
+      pulsoes.push(valor);
+      celulaDoPulso.push(indice);
+      posicaoNaCelula.push(pos);
+    });
+  });
+
+  return { pulsoes, celulaDoPulso, posicaoNaCelula };
 }

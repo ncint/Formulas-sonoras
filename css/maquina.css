@@ -72,6 +72,13 @@
   margin: 0.25rem 0 0;
 }
 
+.timbre {
+  color: var(--texto-suave);
+  font-size: 0.8rem;
+  margin: 0 0 1rem;
+  padding: 0 0.2rem;
+}
+
 /* Visual */
 
 .visual { margin-bottom: 1rem; }

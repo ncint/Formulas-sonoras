@@ -6,14 +6,17 @@ escrevendo números, com inspiração no minimalismo de Steve Reich
 
 ## Como funciona
 
-- Cada número (1, 2 ou 3) representa uma **célula rítmica** de 4 pulsações.
-- O número *n* produz *n* ataques consecutivos no início da célula,
-  seguidos de silêncio.
+- Cada número (1, 2 ou 3) representa uma **célula rítmica** numa
+  grade de colcheias:
+  - **1** = semínima (duas colcheias, um ataque);
+  - **2** = duas colcheias atacadas + pausa de colcheia;
+  - **3** = três colcheias atacadas + pausa de colcheia.
 - As células são reproduzidas pela ordem escrita e a sequência repete-se
   continuamente até carregar em **Parar**.
 - O sinal **+** é um separador visual opcional.
 - Som de percussão de altura indefinida gerado localmente com a
-  **Web Audio API** (sem ficheiros de áudio, sem dependências).
+  **Web Audio API** (sem ficheiros de áudio, sem dependências),
+  com identificador de timbre `palma-seca` (ver `js/audio.js`).
 
 ## Como executar
 
@@ -30,7 +33,7 @@ maquina.html    Máquina rítmica (entrada, visual, controlos)
 css/           base.css, inicio.css, maquina.css
 js/
   sequencia.js Interpretação da sequência e células rítmicas (regras musicais)
-  audio.js     Motor de áudio (Web Audio API, agendamento com lookahead)
+  audio.js     Motor de áudio (Web Audio API, timbre «palma-seca», agendamento com lookahead)
   main.js      Interface (liga entrada, áudio e visual)
 ```
 

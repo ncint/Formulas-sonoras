@@ -1,7 +1,7 @@
 /* Interface da máquina rítmica — junta sequência + áudio. */
 
-import { analisarSequencia, expandirPulsoes, DURACAO_CELULA } from './sequencia.js';
-import { MotorAudio } from './audio.js';
+import { analisarSequencia, expandirSequencia } from './sequencia.js';
+import { MotorAudio, TIMBRE_ID, TIMBRE_NOME } from './audio.js';
 
 const campo = document.getElementById('sequencia');
 const mensagem = document.getElementById('mensagem');
@@ -13,10 +13,16 @@ const celulaAtual = document.getElementById('celula-atual');
 const pulsoEl = document.getElementById('pulso');
 const posicaoEl = document.getElementById('posicao');
 const linhaCelulas = document.getElementById('linha-celulas');
+const timbreEl = document.getElementById('timbre');
 
 const motor = new MotorAudio();
 let celulasAtuais = [];
 let aTocar = false;
+
+/* Mostrar o identificador do timbre. */
+if (timbreEl) {
+  timbreEl.textContent = `Timbre: ${TIMBRE_NOME} (${TIMBRE_ID})`;
+}
 
 /* Pré-carregar sequência do exemplo, se vier na query (?seq=2+3+1). */
 const seqNaQuery = new URLSearchParams(location.search).get('seq');
@@ -63,10 +69,10 @@ function reiniciarVisual() {
 
 function iniciar() {
   if (!validar(true)) return;
-  const pulsoes = expandirPulsoes(celulasAtuais);
-  if (pulsoes.length === 0) return;
+  const sequencia = expandirSequencia(celulasAtuais);
+  if (sequencia.pulsoes.length === 0) return;
 
-  const ok = motor.iniciar(pulsoes, Number(bpmInput.value));
+  const ok = motor.iniciar(sequencia, Number(bpmInput.value));
   if (!ok) return;
   definirInterfaceTocar(true);
 }
@@ -77,18 +83,15 @@ function parar() {
   reiniciarVisual();
 }
 
-/* Visual: acompanhar a pulsação. */
-motor.aoPulso = (pulsoNoCiclo, comAtaque) => {
+/* Visual: acompanhar a pulsação (grade de colcheias). */
+motor.aoPulso = (indiceNoCiclo, indiceCelula, comAtaque) => {
   if (!aTocar) return;
-  const indiceCelula = Math.floor(pulsoNoCiclo / DURACAO_CELULA);
-  const dentroDaCelula = pulsoNoCiclo % DURACAO_CELULA;
 
   const chips = linhaCelulas.querySelectorAll('.celula-chip');
   chips.forEach((c) => c.classList.toggle('ativa', Number(c.dataset.indice) === indiceCelula));
 
   if (celulasAtuais.length > 0) {
     celulaAtual.textContent = String(celulasAtuais[indiceCelula]);
-    posicaoEl.textContent = `pulso ${dentroDaCelula + 1}/${DURACAO_CELULA}`;
   }
 
   if (comAtaque) {

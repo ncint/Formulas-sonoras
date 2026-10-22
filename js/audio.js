@@ -4,11 +4,18 @@
  * curto e seco com envelope rápido, inspirado em palmas/blocos de
  * madeira. O agendamento usa lookahead sobre o relógio do AudioContext
  * para manter a precisão rítmica estável.
+ *
+ * A grade é a COLCHEIA: o BPM refere-se à semínima, logo uma colcheia
+ * dura (60 / BPM) / 2 segundos.
  */
 
-const ATAQUES_POR_CHAMADA = 8;   // pulsações agendadas por passagem
 const INTERVALO_AGENDA_MS = 25; // frequência do agendador
 const LOOKAHEAD_S = 0.12;       // margem de agendamento à frente
+const COLCHEIAS_POR_SEMINIMA = 2;
+
+/* Identificador do timbre em uso (exposto para a interface). */
+export const TIMBRE_ID = 'palma-seca';
+export const TIMBRE_NOME = 'Palma seca (percussão de altura indefinida)';
 
 export class MotorAudio {
   constructor() {
@@ -18,14 +25,14 @@ export class MotorAudio {
     this.aTocar = false;
 
     // estado da reprodução
-    this.pulsoes = [];      // padrão expandido (1/0) do ciclo completo
-    this.bpm = 120;
+    this.pulsoes = [];        // grade de colcheias (1/0) do ciclo completo
+    this.celulaDoPulso = [];  // célula a que cada colcheia pertence
     this.indicePulso = 0;
-    this.proximoTempo = 0;  // tempo do AudioContext da próxima pulsação
+    this.bpm = 120;           // BPM em semínimas
+    this.proximoTempo = 0;
 
-    // callback visual (chamado no momento aproximado de cada ataque,
-    // já alinhado com o tempo real via setTimeout)
-    this.aoAtacar = null;
+    // callback visual (chamado no momento aproximado de cada colcheia,
+    // alinhado com o tempo real via setTimeout)
     this.aoPulso = null;
   }
 
@@ -41,8 +48,8 @@ export class MotorAudio {
     return this.contexto;
   }
 
-  get segundoPorPulso() {
-    return 60 / this.bpm;
+  get segundoPorColcheia() {
+    return 60 / (this.bpm * COLCHEIAS_POR_SEMINIMA);
   }
 
   /** Som curto, seco e articulado (palma/bloco de madeira). */
@@ -80,15 +87,18 @@ export class MotorAudio {
   }
 
   /**
-   * Inicia a reprodução em ciclo. `pulsoes` é o padrão expandido
-   * (1 = ataque, 0 = silêncio). Garante um único ciclo ativo.
+   * Inicia a reprodução em ciclo. Recebe o resultado de
+   * expandirSequencia(): { pulsoes, celulaDoPulso, posicaoNaCelula }.
+   * Garante um único ciclo ativo.
    */
-  iniciar(pulsoes, bpm) {
-    if (pulsoes.length === 0) return false;
+  iniciar(sequencia, bpm) {
+    if (sequencia.pulsoes.length === 0) return false;
     this.parar();
 
     this.garantirContexto();
-    this.pulsoes = pulsoes;
+    this.pulsoes = sequencia.pulsoes;
+    this.celulaDoPulso = sequencia.celulaDoPulso;
+    this.posicaoNaCelula = sequencia.posicaoNaCelula;
     this.bpm = bpm;
     this.indicePulso = 0;
     this.proximoTempo = this.contexto.currentTime + 0.06;
@@ -108,7 +118,7 @@ export class MotorAudio {
     }
   }
 
-  /** Atualiza o andamento sem reiniciar o ciclo. */
+  /** Atualiza o andamento (BPM em semínimas) sem reiniciar o ciclo. */
   definirBpm(bpm) {
     this.bpm = bpm;
   }
@@ -119,27 +129,25 @@ export class MotorAudio {
     while (this.proximoTempo < ctx.currentTime + LOOKAHEAD_S) {
       const valor = this.pulsoes[this.indicePulso];
       const tempo = this.proximoTempo;
-      const indice = this.indicePulso;
-      const pulsoAtual = this.indicePulso % this.pulsoes.length;
+      const indiceNoCiclo = this.indicePulso % this.pulsoes.length;
 
       if (valor === 1) {
         this.atacar(tempo);
-        this._notificarVisual(tempo, pulsoAtual, true);
-      } else {
-        this._notificarVisual(tempo, pulsoAtual, false);
       }
+      this._notificarVisual(tempo, indiceNoCiclo, valor === 1);
 
       this.indicePulso = (this.indicePulso + 1) % this.pulsoes.length;
-      this.proximoTempo += this.segundoPorPulso;
-      if (this.indicePulso === 0 && ATAQUES_POR_CHAMADA) { /* ciclo continua */ }
+      this.proximoTempo += this.segundoPorColcheia;
     }
   }
 
-  _notificarVisual(tempoAlvo, pulsoNoCiclo, comAtaque) {
+  _notificarVisual(tempoAlvo, indiceNoCiclo, comAtaque) {
     const atrasoMs = Math.max(0, (tempoAlvo - this.contexto.currentTime) * 1000);
     setTimeout(() => {
       if (!this.aTocar) return;
-      if (this.aoPulso) this.aoPulso(pulsoNoCiclo, comAtaque);
+      if (this.aoPulso) {
+        this.aoPulso(indiceNoCiclo, this.celulaDoPulso[indiceNoCiclo], comAtaque);
+      }
     }, atrasoMs);
   }
 }
