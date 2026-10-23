@@ -28,6 +28,9 @@
  * vertical é ambíguo — usa-se o modo texto para fórmulas com I.
  */
 
+/* Pausa sem desenhar antes de reconhecer o símbolo (ms). */
+const PAUSA_RECONHECIMENTO_MS = 900;
+
 export class Reconhecedor {
   constructor(canvas, aoReconhecer) {
     this.canvas = canvas;
@@ -77,6 +80,10 @@ export class Reconhecedor {
   }
 
   limpar() {
+    if (this._timerDesenho) {
+      clearTimeout(this._timerDesenho);
+      this._timerDesenho = null;
+    }
     const rect = this.canvas.getBoundingClientRect();
     this.ctx.clearRect(0, 0, rect.width, rect.height);
     this.tracos = [];
@@ -96,6 +103,10 @@ export class Reconhecedor {
   _inicio(e) {
     if (!e.isPrimary) return;
     e.preventDefault();
+    if (this._timerDesenho) {
+      clearTimeout(this._timerDesenho);
+      this._timerDesenho = null;
+    }
     try { this.canvas.setPointerCapture(e.pointerId); } catch (_) {}
     this.tracos.push([this._pos(e)]);
   }
@@ -119,7 +130,14 @@ export class Reconhecedor {
     if (this.tracos.length === 0) return;
     this.tracos = this.tracos.filter((t) => t.length >= 3);
     if (this.tracos.length === 0) { this.limpar(); return; }
-    this._reconhecer();
+
+    // Os traços ficam visíveis; o símbolo é reconhecido após uma
+    // pausa sem desenhar (símbolos como A e E têm vários traços).
+    if (this._timerDesenho) clearTimeout(this._timerDesenho);
+    this._timerDesenho = setTimeout(() => {
+      this._timerDesenho = null;
+      this._reconhecer();
+    }, PAUSA_RECONHECIMENTO_MS);
   }
 
   _reconhecer() {
