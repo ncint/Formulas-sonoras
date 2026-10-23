@@ -1,7 +1,7 @@
 /* Interface da máquina rítmica — junta sequência + áudio. */
 
 import { analisarSequencia, expandirSequencia } from './sequencia.js';
-import { MotorAudio, TIMBRE_ID, TIMBRE_NOME } from './audio.js';
+import { MotorAudio, TIMBRES, TIMBRE_PADRAO } from './audio.js';
 
 const campo = document.getElementById('sequencia');
 const mensagem = document.getElementById('mensagem');
@@ -13,16 +13,36 @@ const celulaAtual = document.getElementById('celula-atual');
 const pulsoEl = document.getElementById('pulso');
 const posicaoEl = document.getElementById('posicao');
 const linhaCelulas = document.getElementById('linha-celulas');
-const timbreEl = document.getElementById('timbre');
+const seletorTimbres = document.getElementById('seletor-timbres');
 
 const motor = new MotorAudio();
 let celulasAtuais = [];
 let aTocar = false;
 
-/* Mostrar o identificador do timbre. */
-if (timbreEl) {
-  timbreEl.textContent = `Timbre: ${TIMBRE_NOME} (${TIMBRE_ID})`;
+/* Construir o seletor de timbres. */
+let timbreAtivo = TIMBRE_PADRAO;
+
+function marcarTimbreAtivo() {
+  seletorTimbres.querySelectorAll('.botao-timbre').forEach((b) => {
+    b.classList.toggle('ativo', b.dataset.timbre === timbreAtivo);
+  });
 }
+
+Object.entries(TIMBRES).forEach(([id, def]) => {
+  const botao = document.createElement('button');
+  botao.type = 'button';
+  botao.className = 'botao-timbre';
+  botao.dataset.timbre = id;
+  botao.textContent = def.nome;
+  botao.addEventListener('click', () => {
+    motor.definirTimbre(id);
+    timbreAtivo = id;
+    marcarTimbreAtivo();
+    motor.ouvirAmostra(); // pré-escuta (também desbloqueia o áudio)
+  });
+  seletorTimbres.appendChild(botao);
+});
+marcarTimbreAtivo();
 
 /* Pré-carregar sequência do exemplo, se vier na query (?seq=2+3+1). */
 const seqNaQuery = new URLSearchParams(location.search).get('seq');

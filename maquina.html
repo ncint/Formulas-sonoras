@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Máquina de Caracteres Sonoros — Máquina rítmica</title>
 <link rel="stylesheet" href="css/base.css?v=2">
-<link rel="stylesheet" href="css/maquina.css?v=2">
+<link rel="stylesheet" href="css/maquina.css?v=3">
 </head>
 <body>
 <main class="maquina">
@@ -33,7 +33,10 @@
     <div id="linha-celulas" class="linha-celulas" aria-hidden="true"></div>
   </section>
 
-  <p id="timbre" class="timbre"></p>
+  <section class="timbres" aria-label="Seleção de timbre">
+    <div class="rotulo">Timbre</div>
+    <div id="seletor-timbres" class="seletor-timbres"></div>
+  </section>
 
   <section class="controles" aria-label="Controlos de reprodução">
     <button id="botao-play" class="botao botao-play" type="button">▶ Tocar</button>
@@ -46,6 +49,6 @@
   </section>
 </main>
 
-<script type="module" src="js/main.js?v=2"></script>
+<script type="module" src="js/main.js?v=3"></script>
 </body>
 </html>

@@ -72,11 +72,34 @@
   margin: 0.25rem 0 0;
 }
 
-.timbre {
+/* Timbres */
+
+.timbres {
+  margin-bottom: 1rem;
+}
+
+.seletor-timbres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.botao-timbre {
+  background: var(--superficie);
   color: var(--texto-suave);
-  font-size: 0.8rem;
-  margin: 0 0 1rem;
-  padding: 0 0.2rem;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.55rem 1.1rem;
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.botao-timbre.ativo {
+  border-color: var(--destaque);
+  color: var(--destaque);
+  background: rgba(110, 231, 183, 0.08);
 }
 
 /* Visual */
