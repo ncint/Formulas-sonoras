@@ -1,29 +1,31 @@
-/* Interpretação da sequência de células rítmicas.
+/* Interpretação da sequência de células rítmicas — fórmulas.
  *
- * Regras (versão 1, rev. 1 — grade de colcheias):
- *  - A unidade mínima é a COLCHEIA (meia semínima).
- *  - 1 = semínima: um ataque com a duração de duas colcheias.
- *  - 2 = duas colcheias atacadas + uma pausa de colcheia.
- *  - 3 = três colcheias atacadas + uma pausa de colcheia.
- *  - As células são reproduzidas pela ordem escrita; a sequência
- *    completa repete-se em ciclo.
- *  - "+" é um separador visual opcional; espaços e vírgulas também
- *    são aceites como separadores.
+ * Linguagem (versão 2):
+ *  - Uma célula é uma fórmula VOGAL + NÚMERO, ex.: A2, E3, I1.
+ *  - A vogal escolhe o timbre: A, E, I, O, U.
+ *  - O número define a célula rítmica em colcheias:
+ *      1 = 1 som + pausa de colcheia (semínima, 2 colcheias)
+ *      2 = 2 sons + pausa de colcheia (3 colcheias)
+ *      3 = 3 sons + pausa de colcheia (4 colcheias)
+ *  - Um número sem vogal usa o timbre por omissão (A).
+ *  - "+" é um separador visual opcional; espaços e vírgulas também.
+ *  - As células tocam pela ordem escrita; a sequência repete-se
+ *    em ciclo, sem completar compasso.
  *
- * Para alterar durações ou padrões no futuro basta mudar PADROES
- * sem tocar no áudio nem na interface.
+ * Cada célula pode ter ainda posição sonora:
+ *  - pan: -1 (esquerda) a +1 (direita); 0 = centro.
+ *  - profundidade: 0 (próximo, seco) a 1 (distante, com reverb).
+ *  A posição só é capturada no modo digitalizador; em texto usa-se
+ *  o centro (pan 0, profundidade 0.5).
  */
 
-/* Padrões por célula, em colcheias (1 = ataque, 0 = silêncio). */
+import { VOGAIS } from './timbres.js';
+
 export const PADROES = {
   1: [1, 0],
   2: [1, 1, 0],
   3: [1, 1, 1, 0],
 };
-
-export const COLCHEIAS_POR_SEMINIMA = 2;
-
-export const CARACTERES_VALIDOS = [1, 2, 3];
 
 /** Gera o padrão de ataques (1) e silêncios (0) de uma célula. */
 export function gerarPadrao(numero) {
@@ -32,8 +34,8 @@ export function gerarPadrao(numero) {
 
 /**
  * Analisa o texto da sequência.
- * Devolve { ok: true, celulas: [número, ...] } ou
- * { ok: false, erro: mensagem }.
+ * Devolve { ok: true, celulas: [célula, ...] } ou { ok: false, erro }.
+ * Cada célula: { vogal, numero, pan, profundidade, token }.
  */
 export function analisarSequencia(texto) {
   const tokens = texto
@@ -44,18 +46,29 @@ export function analisarSequencia(texto) {
     .filter((t) => t.length > 0);
 
   if (tokens.length === 0) {
-    return { ok: false, erro: 'Escreve pelo menos um número (1, 2 ou 3).' };
+    return { ok: false, erro: 'Escreve pelo menos uma fórmula (ex.: A2, E3, 1).' };
   }
 
   const celulas = [];
   for (const token of tokens) {
-    if (!/^[1-3]$/.test(token)) {
+    const m = token.match(/^([aeiouAEIOU])?([1-3])$/);
+    if (!m) {
       return {
         ok: false,
-        erro: `«${token}» não é válido. Usa apenas 1, 2 ou 3, separados por «+».`,
+        erro: `«${token}» não é válido. Usa vogais (A, E, I, O, U) seguidas de 1, 2 ou 3 — ex.: A2.`,
       };
     }
-    celulas.push(Number(token));
+    const vogal = m[1] ? m[1].toUpperCase() : 'A';
+    if (!VOGAIS.includes(vogal)) {
+      return { ok: false, erro: `Vogal «${vogal}» não tem timbre atribuído.` };
+    }
+    celulas.push({
+      vogal,
+      numero: Number(m[2]),
+      pan: 0,
+      profundidade: 0.5,
+      token: vogal + m[2],
+    });
   }
 
   return { ok: true, celulas };
@@ -74,7 +87,7 @@ export function expandirSequencia(celulas) {
   const posicaoNaCelula = [];
 
   celulas.forEach((celula, indice) => {
-    const padrao = gerarPadrao(celula);
+    const padrao = gerarPadrao(celula.numero);
     padrao.forEach((valor, pos) => {
       pulsoes.push(valor);
       celulaDoPulso.push(indice);
@@ -83,4 +96,9 @@ export function expandirSequencia(celulas) {
   });
 
   return { pulsoes, celulaDoPulso, posicaoNaCelula };
+}
+
+/** Converte uma lista de células de volta em texto de fórmulas. */
+export function celulasParaTexto(celulas) {
+  return celulas.map((c) => c.token).join(' + ');
 }

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Máquina de Caracteres Sonoros — Máquina rítmica</title>
 <link rel="stylesheet" href="css/base.css?v=2">
-<link rel="stylesheet" href="css/maquina.css?v=3">
+<link rel="stylesheet" href="css/maquina.css?v=4">
 </head>
 <body>
 <main class="maquina">
@@ -14,14 +14,32 @@
     <h1>Máquina de Caracteres Sonoros</h1>
   </header>
 
-  <section class="entrada" aria-label="Sequência de células rítmicas">
-    <label for="sequencia" class="rotulo">A tua sequência</label>
-    <input id="sequencia" class="campo-sequencia" type="text"
-           inputmode="numeric" autocomplete="off" autocapitalize="off"
-           spellcheck="false" placeholder="ex.: 2 + 3 + 1"
-           value="2 + 3 + 1">
+  <section class="entrada" aria-label="Entrada da sequência">
+    <div class="modos" role="tablist">
+      <button id="modo-texto" class="botao-modo ativo" type="button">Texto</button>
+      <button id="modo-digitalizador" class="botao-modo" type="button">Digitalizador</button>
+    </div>
+
+    <div id="painel-texto">
+      <label for="sequencia" class="rotulo">A tua sequência</label>
+      <input id="sequencia" class="campo-sequencia" type="text"
+             inputmode="text" autocomplete="off" autocapitalize="characters"
+             spellcheck="false" placeholder="ex.: A2 + E3 + I1"
+             value="A2 + E3 + I1">
+      <div class="dica">Fórmula = vogal (timbre) + número (1, 2, 3). Ex.: A2, E3, U1.</div>
+    </div>
+
+    <div id="painel-desenho" hidden>
+      <div class="rotulo">Área de escrita</div>
+      <canvas id="area-desenho" class="area-desenho"></canvas>
+      <div class="linha-desenho">
+        <p id="estado-desenho" class="estado-desenho">Desenha uma vogal e depois um número</p>
+        <button id="botao-limpar-desenho" class="botao-limpar" type="button">Limpar</button>
+      </div>
+      <div class="dica">Esquerda/direita → panorâmica · Cima/baixo → distância (reverb)</div>
+    </div>
+
     <p id="mensagem" class="mensagem" role="status" aria-live="polite"></p>
-    <div class="dica">1 = semínima · 2 = duas colcheias + pausa · 3 = três colcheias + pausa</div>
   </section>
 
   <section class="visual" aria-label="Célula em reprodução">
@@ -33,9 +51,9 @@
     <div id="linha-celulas" class="linha-celulas" aria-hidden="true"></div>
   </section>
 
-  <section class="timbres" aria-label="Seleção de timbre">
-    <div class="rotulo">Timbre</div>
-    <div id="seletor-timbres" class="seletor-timbres"></div>
+  <section class="timbres" aria-label="Vogais e timbres">
+    <div class="rotulo">Vogais — timbres</div>
+    <ul id="lista-timbres" class="lista-timbres"></ul>
   </section>
 
   <section class="controles" aria-label="Controlos de reprodução">
@@ -49,6 +67,6 @@
   </section>
 </main>
 
-<script type="module" src="js/main.js?v=3"></script>
+<script type="module" src="js/main.js?v=4"></script>
 </body>
 </html>
