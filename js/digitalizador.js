@@ -36,18 +36,40 @@ export class Reconhecedor {
     this.tracos = [];
 
     this._configurar();
-    canvas.addEventListener('pointerdown', (e) => this._inicio(e));
-    canvas.addEventListener('pointermove', (e) => this._movimento(e));
-    canvas.addEventListener('pointerup', () => this._fim());
-    canvas.addEventListener('pointercancel', () => this._fim());
+
+    if (typeof canvas.onpointerdown === 'undefined' && !window.PointerEvent) {
+      // Fallback para navegadores sem Pointer Events (iOS antigo):
+      // usa touch events; um dedo desenha, o símbolo fecha ao levantar.
+      canvas.addEventListener('touchstart', (e) => { e.preventDefault(); this._inicio(this._deTouch(e)); }, { passive: false });
+      canvas.addEventListener('touchmove', (e) => { e.preventDefault(); this._movimento(this._deTouch(e)); }, { passive: false });
+      canvas.addEventListener('touchend', (e) => { e.preventDefault(); this._fim(); }, { passive: false });
+    } else {
+      canvas.addEventListener('pointerdown', (e) => this._inicio(e));
+      canvas.addEventListener('pointermove', (e) => this._movimento(e));
+      canvas.addEventListener('pointerup', () => this._fim());
+      canvas.addEventListener('pointercancel', () => this._fim());
+    }
+
+    // No telemóvel o painel pode estar escondido no arranque (dimensão 0):
+    // reconfigurar sempre que o canvas fica visível ou muda de tamanho.
+    if (typeof ResizeObserver === 'function') {
+      this._observer = new ResizeObserver(() => this._configurar());
+      this._observer.observe(canvas);
+    } else {
+      window.addEventListener('resize', () => this._configurar());
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) this._configurar();
+    });
   }
 
   _configurar() {
     const rect = this.canvas.getBoundingClientRect();
+    if (rect.width < 10 || rect.height < 10) return; // painel escondido
     const dpr = window.devicePixelRatio || 1;
-    this.canvas.width = rect.width * dpr;
-    this.canvas.height = rect.height * dpr;
-    this.ctx.scale(dpr, dpr);
+    this.canvas.width = Math.round(rect.width * dpr);
+    this.canvas.height = Math.round(rect.height * dpr);
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     this.ctx.lineWidth = 7;
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
@@ -65,14 +87,23 @@ export class Reconhecedor {
     return { x: e.clientX - rect.left, y: e.clientY - rect.top };
   }
 
+  /** Converte um TouchEvent num pseudo-evento de posição. */
+  _deTouch(e) {
+    const t = e.touches[0] || e.changedTouches[0];
+    return { clientX: t.clientX, clientY: t.clientY, isPrimary: true, pointerId: 0, preventDefault() {} };
+  }
+
   _inicio(e) {
+    if (!e.isPrimary) return;
     e.preventDefault();
-    this.canvas.setPointerCapture(e.pointerId);
+    try { this.canvas.setPointerCapture(e.pointerId); } catch (_) {}
     this.tracos.push([this._pos(e)]);
   }
 
   _movimento(e) {
+    if (!e.isPrimary) return;
     if (this.tracos.length === 0) return;
+    e.preventDefault();
     const atual = this.tracos[this.tracos.length - 1];
     const p = this._pos(e);
     const anterior = atual[atual.length - 1];

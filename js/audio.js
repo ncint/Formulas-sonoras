@@ -202,6 +202,20 @@ export class MotorAudio {
     return true;
   }
 
+  /**
+   * Troca a sequência em tempo real, sem interromper a reprodução.
+   * Mantém a fase aproximada (índice recalculado para o novo ciclo)
+   * e o próximo tempo agendado, para não haver soluço no andamento.
+   */
+  atualizar(sequencia, celulas) {
+    if (sequencia.pulsoes.length === 0) return false;
+    this.pulsoes = sequencia.pulsoes;
+    this.celulaDoPulso = sequencia.celulaDoPulso;
+    this.celulas = celulas;
+    this.indicePulso = this.indicePulso % this.pulsoes.length;
+    return true;
+  }
+
   parar() {
     this.aTocar = false;
     if (this.timerId !== null) {

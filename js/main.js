@@ -103,7 +103,9 @@ function aoReconhecerSimbolo(simbolo, pos) {
     campo.value = celulasParaTexto(celulasAtuais);
     atualizarChips();
     estadoDesenho.textContent = `Adicionada ${vogal}${simbolo}`;
-    if (aTocar) parar();
+    if (aTocar) {
+      motor.atualizar(expandirSequencia(celulasAtuais), celulasAtuais);
+    }
     mensagem.textContent = '';
   }
 }
@@ -126,7 +128,10 @@ function mostrarModo(modo) {
 }
 
 modoTexto.addEventListener('click', () => mostrarModo('texto'));
-modoDigitalizador.addEventListener('click', () => mostrarModo('digitalizador'));
+modoDigitalizador.addEventListener('click', () => {
+  mostrarModo('digitalizador');
+  requestAnimationFrame(() => reconhecedor._configurar());
+});
 
 /* ---------- Reprodução ---------- */
 
@@ -188,9 +193,10 @@ botaoStop.addEventListener('click', parar);
 
 campo.addEventListener('input', () => {
   validar(false);
-  if (aTocar) {
-    parar();
-    mensagem.textContent = 'Sequência alterada — prime Tocar para ouvir.';
+  // Edição em tempo real: a nova sequência entra no próximo instante,
+  // sem interromper a reprodução.
+  if (aTocar && celulasAtuais.length > 0) {
+    motor.atualizar(expandirSequencia(celulasAtuais), celulasAtuais);
   }
 });
 
